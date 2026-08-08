@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
 export default function Controls({ formData, setFormData, onImageUpload, errors = {}, setErrors }) {
+  const fileInputRef = useRef(null);
+
   const TECH_OPTIONS = [
     'Full-Stack',
     'Rust',
@@ -52,6 +54,54 @@ export default function Controls({ formData, setFormData, onImageUpload, errors 
     setFormData((prev) => ({ ...prev, builderTitle: randomTitle }));
   };
 
+  // Convert uploaded image to Black & White automatically via HTML Canvas
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Clear photo upload error if present
+    if (setErrors && errors.photoUrl) {
+      setErrors((prev) => ({ ...prev, photoUrl: null }));
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        ctx.drawImage(img, 0, 0);
+
+        // Black and White Canvas Conversion
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imgData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          const brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
+          data[i] = brightness;     // R
+          data[i + 1] = brightness; // G
+          data[i + 2] = brightness; // B
+        }
+        ctx.putImageData(imgData, 0, 0);
+
+        const bwImageUrl = canvas.toDataURL('image/png');
+
+        // Update form state with processed B&W image URL
+        setFormData((prev) => ({ ...prev, photoUrl: bwImageUrl }));
+
+        // Forward raw file event if parent component needs it
+        if (typeof onImageUpload === 'function') {
+          onImageUpload(e, bwImageUrl);
+        }
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="bg-[#06241B] text-white p-6 md:p-8 rounded-[28px] border-2 border-[#185241] shadow-2xl font-mono space-y-7 selection:bg-[#FFD93D] selection:text-[#06241B]">
       {/* SECTION 01: BUILDER PHOTO */}
@@ -71,40 +121,73 @@ export default function Controls({ formData, setFormData, onImageUpload, errors 
           </span>
         </div>
 
-        <label
-          className={`border-2 border-dashed rounded-2xl p-6 flex items-center gap-5 cursor-pointer transition-all bg-[#082D22] hover:bg-[#0A3327] ${
-            errors.photoUrl
-              ? 'border-red-500 bg-red-950/20'
-              : 'border-[#185241] hover:border-[#FFD93D]/50'
-          }`}
-        >
-          <input
-            type="file"
-            accept="image/*"
-            onChange={onImageUpload}
-            className="hidden"
-          />
-          <div className="w-12 h-12 rounded-xl border border-[#FFD93D]/40 bg-[#06241B] flex items-center justify-center shrink-0 text-[#FFD93D]">
-            <svg
-              className="w-6 h-6 stroke-current fill-none stroke-2"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+        {/* Hidden File Input */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          accept="image/*"
+          onChange={handleFileChange}
+          className="hidden"
+        />
+
+        {/* CONDITIONAL RENDERING: PHOTO PREVIEW VS DROPZONE */}
+        {formData.photoUrl ? (
+          <div className="border-2 border-[#185241] rounded-2xl p-4 flex items-center justify-between bg-[#082D22]">
+            <div className="flex items-center gap-4">
+              <img
+                src={formData.photoUrl}
+                alt="Builder B&W Preview"
+                className="w-16 h-20 object-cover rounded-xl border border-[#FFD93D]/40 grayscale contrast-125"
               />
-            </svg>
-          </div>
-          <div>
-            <div className="text-[13px] font-bold text-white tracking-wide">
-              Drop photo or click to upload
+              <div>
+                <div className="text-[13px] font-bold text-white tracking-wide">
+                  Photo Uploaded
+                </div>
+                <div className="text-[10px] text-[#A2C4B9] mt-0.5 tracking-tight font-semibold">
+                  ✓ B&W Auto Applied
+                </div>
+              </div>
             </div>
-            <div className="text-[10px] text-[#A2C4B9]/70 mt-0.5 tracking-tight">
-              JPG/PNG/HEIC • B&W auto • 180×220 crop • Works with object URL
-            </div>
+
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="bg-[#185241] hover:bg-[#206853] text-[#FFD93D] text-[11px] font-extrabold px-4 py-2 rounded-xl uppercase tracking-wider transition-all"
+            >
+              CHANGE
+            </button>
           </div>
-        </label>
+        ) : (
+          <label
+            onClick={() => fileInputRef.current?.click()}
+            className={`border-2 border-dashed rounded-2xl p-6 flex items-center gap-5 cursor-pointer transition-all bg-[#082D22] hover:bg-[#0A3327] ${
+              errors.photoUrl
+                ? 'border-red-500 bg-red-950/20'
+                : 'border-[#185241] hover:border-[#FFD93D]/50'
+            }`}
+          >
+            <div className="w-12 h-12 rounded-xl border border-[#FFD93D]/40 bg-[#06241B] flex items-center justify-center shrink-0 text-[#FFD93D]">
+              <svg
+                className="w-6 h-6 stroke-current fill-none stroke-2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+                />
+              </svg>
+            </div>
+            <div>
+              <div className="text-[13px] font-bold text-white tracking-wide">
+                Drop photo or click to upload
+              </div>
+              <div className="text-[10px] text-[#A2C4B9]/70 mt-0.5 tracking-tight">
+                JPG/PNG/HEIC • B&W auto • 180×220 crop • Works with object URL
+              </div>
+            </div>
+          </label>
+        )}
 
         {errors.photoUrl && (
           <div className="bg-red-900/30 border border-red-500/60 text-red-300 text-[11px] font-semibold px-4 py-2 rounded-xl">

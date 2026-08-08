@@ -1,6 +1,5 @@
 import React, { useRef, useState, forwardRef, useImperativeHandle } from 'react';
 
-// Use new URL to safely reference static assets without crashing Vite import analysis
 const borderPattern = new URL('../assets/border-pattern.png', import.meta.url).href;
 
 const IDCard = forwardRef(({ formData }, ref) => {
@@ -81,7 +80,6 @@ const IDCard = forwardRef(({ formData }, ref) => {
               hello my name is...
             </span>
 
-            {/* UPDATED CLASSNAME */}
             <h2 className="text-[28px] sm:text-[34px] font-serif font-black text-white tracking-tight leading-snug mt-0.5 wrap-break-word break-all line-clamp-2 min-w-0">
               {formData?.fullName || 'Soumik Mondal'}
             </h2>
@@ -128,7 +126,7 @@ const IDCard = forwardRef(({ formData }, ref) => {
                   GITHUB
                 </span>
                 <span className="text-[#628A7D] font-medium tracking-wide truncate">
-                  @{formData?.github || 'soumikx'} •{' '}
+                  @{formData?.github || 's0um1kx'} •{' '}
                   {formData?.linkedin || 'soumik.workmail@gmail.com'}
                 </span>
               </div>
@@ -143,7 +141,7 @@ const IDCard = forwardRef(({ formData }, ref) => {
                   <img
                     src={formData.photoUrl}
                     alt="Builder Photo"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover grayscale contrast-125"
                   />
                 ) : (
                   <div className="flex flex-col items-center justify-center gap-2 text-[#A2C4B9]/60">
@@ -192,7 +190,7 @@ const IDCard = forwardRef(({ formData }, ref) => {
               BUILDER VERIFIED
             </button>
             <span className="text-[9px] text-[#628A7D] tracking-widest font-mono mt-1">
-              {formData?.builderId || 'HH026-30423'} • #frameingoa
+              {formData?.builderId || 'HH026-42952'} • #frameingoa
             </span>
           </div>
         </div>
