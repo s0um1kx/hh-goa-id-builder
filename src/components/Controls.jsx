@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
 export default function Controls({ formData, setFormData, onImageUpload }) {
-  const allTechOptions = [
+  const fileInputRef = useRef(null);
+
+  const techOptions = [
     'Full-Stack',
     'Rust',
     'AI',
@@ -11,254 +13,277 @@ export default function Controls({ formData, setFormData, onImageUpload }) {
     'Founder',
     'Infra',
     'ZK',
-    'Mobile',
-    'TypeScript',
-    'Web3',
   ];
 
   const builderTitles = [
     'CODE WIZARD',
-    'PIXEL ALCHEMIST',
-    'SYSTEMS ARCHITECT',
-    'PROTOCOL ENGINE',
-    'SOLANA BUILDER',
-    'AI RESEARCHER',
+    'RUST ARCHITECT',
+    'SOLANA NINJA',
+    'AI HACKER',
+    'FULL-STACK PRO',
+    'INFRA DEGEN',
+    'PROTOCOL BUILDER',
+    '0X SHINOBI',
   ];
 
-  const handleInputChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleRandomizeTitle = () => {
+    const currentTitle = formData.builderTitle;
+    const filtered = builderTitles.filter((t) => t !== currentTitle);
+    const randomIndex = Math.floor(Math.random() * filtered.length);
+    setFormData((prev) => ({
+      ...prev,
+      builderTitle: filtered[randomIndex],
+    }));
   };
 
-  const toggleTech = (tech) => {
+  const handleTechToggle = (tech) => {
     setFormData((prev) => {
       const current = prev.selectedTech || [];
       if (current.includes(tech)) {
         return { ...prev, selectedTech: current.filter((t) => t !== tech) };
       }
-      if (current.length < 4) {
-        return { ...prev, selectedTech: [...current, tech] };
-      }
-      return prev;
+      if (current.length >= 4) return prev;
+      return { ...prev, selectedTech: [...current, tech] };
     });
   };
 
-  const handleRandomizeTitle = () => {
-    const available = builderTitles.filter((t) => t !== formData.builderTitle);
-    const randomTitle = available[Math.floor(Math.random() * available.length)];
-    setFormData((prev) => ({ ...prev, builderTitle: randomTitle }));
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const objectUrl = URL.createObjectURL(file);
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = objectUrl;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      ctx.drawImage(img, 0, 0);
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imgData.data;
+
+      for (let i = 0; i < data.length; i += 4) {
+        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        data[i] = avg;
+        data[i + 1] = avg;
+        data[i + 2] = avg;
+      }
+
+      ctx.putImageData(imgData, 0, 0);
+      const processedUrl = canvas.toDataURL('image/png');
+
+      setFormData((prev) => ({
+        ...prev,
+        photoUrl: processedUrl,
+      }));
+    };
   };
 
   return (
-    <div className="flex flex-col gap-6 font-mono selection:bg-[#FFD93D] selection:text-[#0A251C]">
-      {/* Header Banner - Removed description paragraph and V4 badge as requested */}
-      <div className="flex items-center gap-3 flex-wrap">
-        <span className="font-serif font-black text-4xl tracking-tight text-[#0A251C]">
-          Builder
-        </span>
-        <div className="bg-[#0A251C] text-[#FFFBEB] px-4 py-1.5 rounded-2xl font-serif text-3xl font-black tracking-tight shadow-md inline-block">
-          ID Card
+    <div className="bg-[#0C372B] text-white rounded-3xl p-6 border-[1.5px] border-[#185241] shadow-2xl font-mono flex flex-col gap-6">
+      {/* 01 / BUILDER PHOTO */}
+      <div>
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-[11px] font-bold text-[#FFD93D] uppercase tracking-wider">
+            01 / BUILDER PHOTO
+          </span>
+          <span className="text-[10px] text-[#A2C4B9] bg-[#082920] px-2 py-0.5 rounded border border-[#185241]">
+            {formData.photoUrl ? 'UPLOADED' : 'EMPTY'}
+          </span>
         </div>
+
+        <label className="border border-dashed border-[#185241] bg-[#082920] rounded-2xl p-4 flex items-center gap-4 cursor-pointer hover:border-[#FFD93D] transition-colors">
+          <div className="w-14 h-14 bg-[#061F18] border border-[#FFD93D] rounded-xl flex items-center justify-center text-[#FFD93D] shrink-0 overflow-hidden">
+            {formData.photoUrl ? (
+              <img
+                src={formData.photoUrl}
+                alt="Preview"
+                className="w-full h-full object-cover rounded-lg"
+              />
+            ) : (
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                />
+              </svg>
+            )}
+          </div>
+
+          <div>
+            <div className="text-xs font-bold text-white mb-0.5">
+              Drop photo or click to upload
+            </div>
+            <div className="text-[10px] text-[#A2C4B9]">
+              JPG/PNG/HEIC • B&W auto • 180×220 crop • Works with object URL
+            </div>
+          </div>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/heic,image/heif,.heic,.heif"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+        </label>
       </div>
 
-      {/* Green Container Box for Controls */}
-      <div className="bg-[#0A251C] text-[#E0E7E3] rounded-3xl p-7 border border-[#143D2F] shadow-2xl flex flex-col gap-6">
-        {/* 01 / BUILDER PHOTO */}
-        <div className="border border-[#143D2F] bg-[#071D16] rounded-2xl p-5 flex flex-col gap-3">
-          <div className="flex justify-between items-center text-[11px] font-bold tracking-wider text-[#FFD93D] uppercase">
-            <span>01 / BUILDER PHOTO</span>
-            <span className="text-[10px] text-[#A3B8B0]/70 bg-[#143D2F]/60 px-2.5 py-0.5 rounded-full">
-              {formData.photoUrl ? 'UPLOADED' : 'EMPTY'}
-            </span>
-          </div>
+      {/* 02 / YOUR DETAILS */}
+      <div className="flex flex-col gap-4">
+        <span className="text-[11px] font-bold text-[#FFD93D] uppercase tracking-wider">
+          02 / YOUR DETAILS
+        </span>
 
-          <label className="relative flex items-center gap-4 bg-[#0A251C] hover:bg-[#0E3327] border border-dashed border-[#1B4D3C] hover:border-[#FFD93D]/60 p-4 rounded-xl cursor-pointer transition-all duration-200 group">
-            <div className="w-14 h-14 rounded-xl bg-[#0A251C] border border-[#FFD93D]/40 flex items-center justify-center font-serif text-lg font-bold text-[#FFD93D] overflow-hidden shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-              {formData.photoUrl ? (
-                <img
-                  src={formData.photoUrl}
-                  alt="Uploaded portrait"
-                  className="w-full h-full object-cover grayscale"
-                />
-              ) : (
-                <span>SM</span>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-0.5">
-              <span className="text-[13px] font-bold text-white group-hover:text-[#FFD93D] transition-colors">
-                Drop photo or click to upload
-              </span>
-              <span className="text-[10px] text-[#A3B8B0]/70">
-                JPG/PNG • B&W auto • 180×220 crop • Works with object URL
-              </span>
-            </div>
-
-            <input
-              type="file"
-              accept="image/*"
-              onChange={onImageUpload}
-              className="hidden"
-            />
+        {/* FULL NAME */}
+        <div>
+          <label className="block text-[10px] font-bold text-[#A2C4B9] uppercase tracking-wider mb-1">
+            FULL NAME *
           </label>
+          <input
+            type="text"
+            value={formData.fullName}
+            onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+            className="w-full bg-[#FAF7EE] text-[#0C372B] font-bold rounded-2xl px-4 py-3 outline-none border border-transparent focus:border-[#FFD93D]"
+            placeholder="Soumik Mondal"
+          />
         </div>
 
-        {/* 02 / YOUR DETAILS */}
-        <div className="border border-[#143D2F] bg-[#071D16] rounded-2xl p-5 flex flex-col gap-4">
-          <div className="text-[11px] font-bold tracking-wider text-[#FFD93D] uppercase">
-            02 / YOUR DETAILS
-          </div>
-
-          {/* Full Name */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-bold text-[#A3B8B0] tracking-wider uppercase">
-              FULL NAME *
+        {/* ROLE & LOCATION */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-[10px] font-bold text-[#A2C4B9] uppercase tracking-wider mb-1">
+              ROLE
             </label>
             <input
               type="text"
-              value={formData.fullName || ''}
-              onChange={(e) => handleInputChange('fullName', e.target.value)}
-              className="w-full bg-[#FFFBEB] text-[#0A251C] font-extrabold text-[15px] px-4 py-3 rounded-2xl border-none outline-none focus:ring-2 focus:ring-[#FFD93D] shadow-sm transition-all"
-              placeholder="Soumik Mondal"
+              value={formData.role}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+              className="w-full bg-[#082920] text-white font-semibold rounded-xl px-3 py-2.5 text-xs outline-none border border-[#185241] focus:border-[#FFD93D]"
+              placeholder="Full-Stack Builder"
             />
           </div>
 
-          {/* Role & Location */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-[#A3B8B0] tracking-wider uppercase">
-                ROLE
-              </label>
-              <input
-                type="text"
-                value={formData.role || ''}
-                onChange={(e) => handleInputChange('role', e.target.value)}
-                className="w-full bg-[#0A251C] text-white text-[12px] px-3.5 py-2.5 rounded-xl border border-[#143D2F] outline-none focus:border-[#FFD93D] transition-colors"
-                placeholder="Full-Stack Builder"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-[#A3B8B0] tracking-wider uppercase">
-                LOCATION
-              </label>
-              <input
-                type="text"
-                value={formData.location || ''}
-                onChange={(e) => handleInputChange('location', e.target.value)}
-                className="w-full bg-[#0A251C] text-white text-[12px] px-3.5 py-2.5 rounded-xl border border-[#143D2F] outline-none focus:border-[#FFD93D] transition-colors"
-                placeholder="Goa, India"
-              />
-            </div>
-          </div>
-
-          {/* Tech Stack Picker */}
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center">
-              <label className="text-[10px] font-bold text-[#A3B8B0] tracking-wider uppercase">
-                TECH STACK — PICK UP TO 4
-              </label>
-              <span className="text-[10px] font-bold text-[#FFD93D]">
-                {(formData.selectedTech || []).length}/4 SELECTED
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {allTechOptions.map((tech) => {
-                const isSelected = (formData.selectedTech || []).includes(tech);
-                return (
-                  <button
-                    key={tech}
-                    type="button"
-                    onClick={() => toggleTech(tech)}
-                    className={`text-[11px] font-bold px-3 py-1.5 rounded-full border transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 ${
-                      isSelected
-                        ? 'bg-[#FFD93D] text-[#0A251C] border-[#FFD93D] shadow-[2px_2px_0px_#072018]'
-                        : 'bg-[#0A251C] text-[#A3B8B0] border-[#143D2F] hover:border-[#A3B8B0]/60 hover:text-white'
-                    }`}
-                  >
-                    {tech}
-                    {isSelected && <span className="text-[9px]">●</span>}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* GitHub & Email */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-[#A3B8B0] tracking-wider uppercase">
-                GITHUB HANDLE
-              </label>
-              <input
-                type="text"
-                value={formData.github || ''}
-                onChange={(e) => handleInputChange('github', e.target.value)}
-                className="w-full bg-[#0A251C] text-white text-[12px] px-3.5 py-2.5 rounded-xl border border-[#143D2F] outline-none focus:border-[#FFD93D] transition-colors"
-                placeholder="s0um1kx"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-[#A3B8B0] tracking-wider uppercase">
-                EMAIL / LINKEDIN
-              </label>
-              <input
-                type="text"
-                value={formData.linkedin || ''}
-                onChange={(e) => handleInputChange('linkedin', e.target.value)}
-                className="w-full bg-[#0A251C] text-white text-[12px] px-3.5 py-2.5 rounded-xl border border-[#143D2F] outline-none focus:border-[#FFD93D] transition-colors"
-                placeholder="soumik.workmail@gmail.com"
-              />
-            </div>
+          <div>
+            <label className="block text-[10px] font-bold text-[#A2C4B9] uppercase tracking-wider mb-1">
+              LOCATION
+            </label>
+            <input
+              type="text"
+              value={formData.location}
+              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              className="w-full bg-[#082920] text-white font-semibold rounded-xl px-3 py-2.5 text-xs outline-none border border-[#185241] focus:border-[#FFD93D]"
+              placeholder="Goa, India"
+            />
           </div>
         </div>
 
-        {/* 03 / BUILDER IDENTITY */}
-        <div className="border border-[#143D2F] bg-[#071D16] rounded-2xl p-5 flex flex-col gap-4">
-          <div className="flex justify-between items-center text-[11px] font-bold tracking-wider text-[#FFD93D] uppercase">
-            <span>03 / BUILDER IDENTITY</span>
-            <button
-              type="button"
-              onClick={handleRandomizeTitle}
-              className="bg-[#FFD93D] hover:bg-[#ffe366] text-[#0A251C] text-[10px] font-black px-3 py-1 rounded-full uppercase transition-all active:scale-90 shadow-sm cursor-pointer"
-            >
-              RANDOMIZE ↺
-            </button>
-          </div>
-
-          {/* Title Banner Card */}
-          <div className="bg-[#0A251C] border border-[#143D2F] rounded-xl p-4 flex justify-between items-center">
-            <div className="flex flex-col gap-1">
-              <span className="text-[9px] font-bold text-[#A3B8B0] uppercase tracking-wider">
-                BUILDER ID TITLE
-              </span>
-              <span className="text-xl font-black text-[#FFD93D] tracking-wider uppercase">
-                {formData.builderTitle || 'CODE WIZARD'}
-              </span>
-            </div>
-            <div className="w-9 h-9 rounded-full bg-[#FFD93D] text-[#0A251C] flex items-center justify-center font-black text-sm shadow">
-              ⚡
-            </div>
-          </div>
-
-          {/* Currently Shipping */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-bold text-[#A3B8B0] tracking-wider uppercase">
-              CURRENTLY SHIPPING
+        {/* TECH STACK CHIPS */}
+        <div>
+          <div className="flex justify-between items-center mb-2">
+            <label className="text-[10px] font-bold text-[#A2C4B9] uppercase tracking-wider">
+              TECH STACK — PICK UP TO 4
             </label>
-            <textarea
-              rows={3}
-              value={formData.currentlyShipping || ''}
-              onChange={(e) =>
-                handleInputChange('currentlyShipping', e.target.value)
-              }
-              className="w-full bg-[#0A251C] text-white text-[12px] p-3 rounded-xl border border-[#143D2F] outline-none focus:border-[#FFD93D] resize-none leading-relaxed transition-colors"
-              placeholder="Building local-first GPU mesh + cold brews on the beach. Shipping daily from Goa."
-            />
-            <span className="text-[10px] text-[#A3B8B0]/60 mt-0.5">
-              Appears on back + QR landing • {(formData.currentlyShipping || '').length} chars
+            <span className="text-[10px] text-[#FFD93D] font-bold">
+              {formData.selectedTech?.length || 0}/4 SELECTED
             </span>
           </div>
+
+          <div className="flex flex-wrap gap-2">
+            {techOptions.map((tech) => {
+              const isSelected = formData.selectedTech?.includes(tech);
+              return (
+                <button
+                  key={tech}
+                  type="button"
+                  onClick={() => handleTechToggle(tech)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${
+                    isSelected
+                      ? 'bg-[#FFD93D] text-[#0C372B] border-[#FFD93D]'
+                      : 'bg-[#082920] text-white border-[#185241] hover:border-[#A2C4B9]'
+                  }`}
+                >
+                  {tech} {isSelected && '•'}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* GITHUB & LINKEDIN / EMAIL */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-[10px] font-bold text-[#A2C4B9] uppercase tracking-wider mb-1">
+              GITHUB
+            </label>
+            <input
+              type="text"
+              value={formData.github}
+              onChange={(e) => setFormData({ ...formData, github: e.target.value })}
+              className="w-full bg-[#082920] text-white font-semibold rounded-xl px-3 py-2.5 text-xs outline-none border border-[#185241] focus:border-[#FFD93D]"
+              placeholder="s8um1kx"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-bold text-[#A2C4B9] uppercase tracking-wider mb-1">
+              CONTACT / LINKEDIN
+            </label>
+            <input
+              type="text"
+              value={formData.linkedin}
+              onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+              className="w-full bg-[#082920] text-white font-semibold rounded-xl px-3 py-2.5 text-xs outline-none border border-[#185241] focus:border-[#FFD93D]"
+              placeholder="soumik.workmail@gmail.com"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* 03 / BUILDER IDENTITY */}
+      <div>
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-[11px] font-bold text-[#FFD93D] uppercase tracking-wider">
+            03 / BUILDER IDENTITY
+          </span>
+          <button
+            type="button"
+            onClick={handleRandomizeTitle}
+            className="bg-[#FFD93D] text-[#0C372B] text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 hover:bg-yellow-300 transition-colors"
+          >
+            RANDOMIZE ↺
+          </button>
+        </div>
+
+        <div className="bg-[#051C16] border border-[#185241] rounded-2xl p-4 flex justify-between items-center">
+          <div>
+            <span className="block text-[9px] font-bold text-[#A2C4B9] uppercase tracking-wider mb-1">
+              BUILDER TITLE
+            </span>
+            <span className="text-xl font-black text-[#FFD93D] tracking-wide uppercase">
+              {formData.builderTitle || 'CODE WIZARD'}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleRandomizeTitle}
+            className="w-10 h-10 bg-[#FFD93D] text-[#0C372B] rounded-full flex items-center justify-center font-bold text-lg hover:scale-105 transition-transform shrink-0"
+          >
+            ⚡
+          </button>
         </div>
       </div>
     </div>
