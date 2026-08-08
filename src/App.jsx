@@ -171,7 +171,7 @@ export default function App() {
 
   // Ensure full https:// protocol is included
   const appUrl = 'https://hh-goa-id-builder.vercel.app/';
-  const tweetText = `🌴 Built my Hacker Goa House Builder Card!\n\n👤 ${formData.fullName}\n🎴 Builder ID: #${formData.builderId}\n\nExcited to build, ship, and connect with amazing builders in Goa. 🚀\n\nCreate your own Builder Card: ${appUrl}\n\n#FrameInGoa #HHGoa2026`;
+  const tweetText = `🛵 Built my Hacker Goa House Builder ID Card!\n\n👤 ${formData.fullName}\n🪪 Builder ID: #${formData.builderId}\n\nExcited to build, ship, and connect with amazing builders in Goa. 🌊\n\nCreate your own Builder Card: ${appUrl}\n\n#FrameInGoa #HHGoa2026`;
 
   const twitterUrl = `https://x.com/intent/post?text=${encodeURIComponent(tweetText)}`;
 
