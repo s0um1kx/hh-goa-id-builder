@@ -1,100 +1,21 @@
 import React from 'react';
-import { Download, X } from 'lucide-react';
 
-export default function ShareActions({ exportNodeRef, isExporting, setIsExporting, fileName, data }) {
-  
-  const generateImage = async () => {
-    if (!exportNodeRef.current) return null;
-    setIsExporting(true);
-    try {
-      const { toPng } = await import('html-to-image');
-      const dataUrl = await toPng(exportNodeRef.current, { 
-        cacheBust: true, 
-        quality: 1,
-        pixelRatio: 2 
-      });
-      setIsExporting(false);
-      return dataUrl;
-    } catch (err) {
-      console.error('Render failed:', err);
-      setIsExporting(false);
-      return null;
-    }
-  };
-
-  const handleDownload = async () => {
-    if (!exportNodeRef.current) return;
-    setIsExporting(true);
-    try {
-      const { toPng } = await import('html-to-image');
-      const dataUrl = await toPng(exportNodeRef.current, { cacheBust: true, quality: 1, pixelRatio: 2 });
-      setIsExporting(false);
-      
-      const link = document.createElement('a');
-      link.download = fileName;
-      link.href = dataUrl;
-      link.click();
-    } catch (err) {
-      console.error('Download failed:', err);
-      setIsExporting(false);
-    }
-  };
-
-  const handleShare = async () => {
-    const tweetText = `🌴 Built my Hacker Goa House Builder Card!\n\n👤 ${data.name || 'Builder'}\n🆔 Builder ID: #HH-GOA-6825\n\nExcited to build, ship, and connect with amazing builders in Goa. 🚀\n\n#FrameInGoa #HHGoa2026`;
-
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    if (!isMobile || !navigator.canShare) {
-      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`, '_blank');
-      return;
-    }
-
-    if (!exportNodeRef.current) return;
-    setIsExporting(true);
-    try {
-      const { toPng } = await import('html-to-image');
-      const dataUrl = await toPng(exportNodeRef.current, { cacheBust: true, quality: 1, pixelRatio: 2 });
-      setIsExporting(false);
-
-      const blob = await (await fetch(dataUrl)).blob();
-      const file = new File([blob], fileName, { type: 'image/png' });
-
-      if (navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          title: 'Hacker House Goa 2026',
-          text: tweetText,
-          files: [file],
-        });
-      } else {
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`, '_blank');
-      }
-    } catch (error) {
-      setIsExporting(false);
-      if (error.name !== 'AbortError') {
-         window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`, '_blank');
-      }
-    }
-  };
-
+export default function ShareActions({ onDownload }) {
   return (
-    <div className="flex gap-4">
-      <button 
-        onClick={handleDownload}
-        disabled={isExporting}
-        className="flex-1 bg-hh-green text-hh-yellow border-2 border-hh-green p-4 font-sans text-xl tracking-wider hover:bg-green-900 transition-colors flex items-center justify-center gap-2 cursor-pointer rounded-2xl shadow-md"
+    <div className="flex items-center justify-center gap-3 w-full max-w-lg pt-2 font-mono">
+      <button
+        onClick={onDownload}
+        className="flex-1 bg-[#0A251C] text-[#FFD93D] hover:bg-[#12382b] border-2 border-[#0A251C] font-black py-3 px-6 rounded-full shadow-[4px_4px_0px_0px_#0A251C] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_#0A251C] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none uppercase text-xs tracking-wider flex items-center justify-center gap-2"
       >
-        <Download size={22} />
-        {isExporting ? 'RENDERING...' : 'Download Pass'}
+        <span>↓</span> DOWNLOAD HQ PNG
       </button>
-      
-      <button 
-        onClick={handleShare}
-        disabled={isExporting}
-        className="flex-1 bg-white text-zinc-900 border-2 border-zinc-900 p-4 font-sans text-xl tracking-wider hover:bg-zinc-100 transition-colors flex items-center justify-center gap-2 cursor-pointer rounded-2xl shadow-md"
+
+      <button
+        type="button"
+        onClick={() => navigator.clipboard.writeText(window.location.href)}
+        className="bg-[#FFFBEB] text-[#0A251C] hover:bg-[#FFD93D] border-2 border-[#0A251C] font-black py-3 px-5 rounded-full shadow-[4px_4px_0px_0px_#0A251C] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_#0A251C] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none uppercase text-xs tracking-wider shrink-0"
       >
-        <X size={20} className="fill-current" />
-        <span>Share to X</span>
+        COPY LINK
       </button>
     </div>
   );
