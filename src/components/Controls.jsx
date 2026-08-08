@@ -1,6 +1,12 @@
 import React, { useRef } from 'react';
 
-export default function Controls({ formData, setFormData, onImageUpload, errors = {}, setErrors }) {
+export default function Controls({
+  formData,
+  setFormData,
+  onImageUpload,
+  errors = {},
+  setErrors,
+}) {
   const fileInputRef = useRef(null);
 
   const TECH_OPTIONS = [
@@ -54,52 +60,17 @@ export default function Controls({ formData, setFormData, onImageUpload, errors 
     setFormData((prev) => ({ ...prev, builderTitle: randomTitle }));
   };
 
-  // Convert uploaded image to Black & White automatically via HTML Canvas
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Clear photo upload error if present
     if (setErrors && errors.photoUrl) {
       setErrors((prev) => ({ ...prev, photoUrl: null }));
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-
-        canvas.width = img.width;
-        canvas.height = img.height;
-
-        ctx.drawImage(img, 0, 0);
-
-        // Black and White Canvas Conversion
-        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imgData.data;
-        for (let i = 0; i < data.length; i += 4) {
-          const brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
-          data[i] = brightness;     // R
-          data[i + 1] = brightness; // G
-          data[i + 2] = brightness; // B
-        }
-        ctx.putImageData(imgData, 0, 0);
-
-        const bwImageUrl = canvas.toDataURL('image/png');
-
-        // Update form state with processed B&W image URL
-        setFormData((prev) => ({ ...prev, photoUrl: bwImageUrl }));
-
-        // Forward raw file event if parent component needs it
-        if (typeof onImageUpload === 'function') {
-          onImageUpload(e, bwImageUrl);
-        }
-      };
-      img.src = event.target.result;
-    };
-    reader.readAsDataURL(file);
+    if (typeof onImageUpload === 'function') {
+      onImageUpload(e);
+    }
   };
 
   return (
@@ -121,16 +92,15 @@ export default function Controls({ formData, setFormData, onImageUpload, errors 
           </span>
         </div>
 
-        {/* Hidden File Input */}
+        {/* Hidden File Input accepting HEIC/HEIF files */}
         <input
           type="file"
           ref={fileInputRef}
-          accept="image/*"
+          accept="image/png, image/jpeg, image/jpg, image/heic, image/heif, .heic, .heif"
           onChange={handleFileChange}
           className="hidden"
         />
 
-        {/* CONDITIONAL RENDERING: PHOTO PREVIEW VS DROPZONE */}
         {formData.photoUrl ? (
           <div className="border-2 border-[#185241] rounded-2xl p-4 flex items-center justify-between bg-[#082D22]">
             <div className="flex items-center gap-4">
@@ -202,7 +172,6 @@ export default function Controls({ formData, setFormData, onImageUpload, errors 
           02 / YOUR DETAILS
         </h3>
 
-        {/* FULL NAME */}
         <div className="space-y-1.5">
           <label className="block text-[10px] font-black text-[#A2C4B9] tracking-widest uppercase">
             FULL NAME <span className="text-red-400">*</span>
@@ -226,7 +195,6 @@ export default function Controls({ formData, setFormData, onImageUpload, errors 
           )}
         </div>
 
-        {/* ROLE & LOCATION */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <label className="block text-[10px] font-black text-[#A2C4B9] tracking-widest uppercase">
@@ -266,7 +234,6 @@ export default function Controls({ formData, setFormData, onImageUpload, errors 
           </div>
         </div>
 
-        {/* TECH STACK */}
         <div className="space-y-2 pt-1">
           <div className="flex justify-between items-center">
             <label className="text-[10px] font-black text-[#A2C4B9] tracking-widest uppercase">
@@ -311,7 +278,6 @@ export default function Controls({ formData, setFormData, onImageUpload, errors 
           )}
         </div>
 
-        {/* GITHUB & CONTACT */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
           <div className="space-y-1.5">
             <label className="block text-[10px] font-black text-[#A2C4B9] tracking-widest uppercase">

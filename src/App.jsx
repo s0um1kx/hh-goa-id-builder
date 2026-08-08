@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { toPng } from 'html-to-image';
+import heic2any from 'heic2any';
 import Controls from './components/Controls';
 import IDCard from './components/IDCard';
 import ShareActions from './components/ShareActions';
@@ -55,21 +56,73 @@ export default function App() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
+  const processAndSetImage = (fileToRead) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        ctx.drawImage(img, 0, 0);
+
+        // B&W filter transformation
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imgData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          const brightness =
+            0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
+          data[i] = brightness;
+          data[i + 1] = brightness;
+          data[i + 2] = brightness;
+        }
+        ctx.putImageData(imgData, 0, 0);
+
+        const bwImageUrl = canvas.toDataURL('image/png');
+        setFormData((prev) => ({ ...prev, photoUrl: bwImageUrl }));
+        setErrors((prev) => ({ ...prev, photoUrl: null }));
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(fileToRead);
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target?.files?.[0] || e;
+    if (!file || !(file instanceof Blob)) return;
+
+    try {
+      let fileToProcess = file;
+
+      // Check if file is HEIC / HEIF format
+      const isHeic =
+        file.name?.toLowerCase().endsWith('.heic') ||
+        file.name?.toLowerCase().endsWith('.heif') ||
+        file.type === 'image/heic' ||
+        file.type === 'image/heif';
+
+      if (isHeic) {
+        const convertedBlob = await heic2any({
+          blob: file,
+          toType: 'image/jpeg',
+          quality: 0.9,
+        });
+        fileToProcess = Array.isArray(convertedBlob)
+          ? convertedBlob[0]
+          : convertedBlob;
+      }
+
       if (formData.photoUrl && formData.photoUrl.startsWith('blob:')) {
         URL.revokeObjectURL(formData.photoUrl);
       }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({
-          ...prev,
-          photoUrl: reader.result,
-        }));
-        setErrors((prev) => ({ ...prev, photoUrl: null }));
-      };
-      reader.readAsDataURL(file);
+
+      processAndSetImage(fileToProcess);
+    } catch (err) {
+      console.error('HEIC processing failed:', err);
+      alert('Unable to process this image. Please try another photo.');
     }
   };
 
@@ -145,7 +198,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen text-[#0C372B] flex flex-col font-mono selection:bg-[#FFD93D] relative bg-[#FAF8F5]">
-      {/* Background SVG Pattern Layer */}
+      {/* Sage Cross Background Pattern */}
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none z-0"
         xmlns="http://www.w3.org/2000/svg"
@@ -208,11 +261,16 @@ export default function App() {
           }
         `}</style>
         <div className="animate-marquee flex gap-6 items-center pr-6">
-          {[...tickerItems, ...tickerItems, ...tickerItems, ...tickerItems].map((item, idx) => (
-            <span key={idx} className={item === '•' ? 'text-[#0C372B]/40' : ''}>
-              {item}
-            </span>
-          ))}
+          {[...tickerItems, ...tickerItems, ...tickerItems, ...tickerItems].map(
+            (item, idx) => (
+              <span
+                key={idx}
+                className={item === '•' ? 'text-[#0C372B]/40' : ''}
+              >
+                {item}
+              </span>
+            )
+          )}
         </div>
       </div>
 
