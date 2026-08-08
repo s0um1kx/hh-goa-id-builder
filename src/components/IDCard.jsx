@@ -1,7 +1,13 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, forwardRef, useImperativeHandle } from 'react';
 
-export default function IDCard({ formData }) {
+// Use new URL to safely reference static assets without crashing Vite import analysis
+const borderPattern = new URL('../assets/border-pattern.png', import.meta.url).href;
+
+const IDCard = forwardRef(({ formData }, ref) => {
   const cardRef = useRef(null);
+
+  useImperativeHandle(ref, () => cardRef.current);
+
   const [tiltStyle, setTiltStyle] = useState({
     transform: 'perspective(1200px) rotateX(0deg) rotateY(0deg)',
     transition: 'transform 0.5s cubic-bezier(0.03, 0.98, 0.52, 0.99)',
@@ -47,7 +53,7 @@ export default function IDCard({ formData }) {
       <div
         className="absolute left-0 top-0 bottom-0 w-8 bg-[#082920] border-r border-[#185241] z-10 overflow-hidden"
         style={{
-          backgroundImage: `url('/assets/border-pattern.png')`,
+          backgroundImage: `url(${borderPattern})`,
           backgroundRepeat: 'repeat-y',
           backgroundPosition: 'top center',
           backgroundSize: '100% auto',
@@ -128,7 +134,7 @@ export default function IDCard({ formData }) {
             </div>
           </div>
 
-          {/* Right Column: Large Photo Card + Sticker + Builder Verified Button */}
+          {/* Right Column: Photo Card */}
           <div className="flex flex-col items-center shrink-0">
             <div className="relative w-50 h-60">
               <div className="w-full h-full bg-[#061F18] rounded-2xl border-2 border-[#FFD93D] overflow-hidden relative shadow-2xl flex items-center justify-center">
@@ -145,7 +151,6 @@ export default function IDCard({ formData }) {
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
                         strokeLinecap="round"
@@ -182,7 +187,6 @@ export default function IDCard({ formData }) {
               </div>
             </div>
 
-            {/* Pink BUILDER VERIFIED Button */}
             <button className="w-full mt-3 bg-[#FF3366] text-white text-[11px] font-black py-2 rounded-full uppercase tracking-widest shadow-md text-center">
               BUILDER VERIFIED
             </button>
@@ -194,4 +198,6 @@ export default function IDCard({ formData }) {
       </div>
     </div>
   );
-}
+});
+
+export default IDCard;

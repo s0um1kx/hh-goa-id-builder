@@ -1,22 +1,36 @@
 import React from 'react';
 
-export default function ShareActions({ onDownload }) {
+export default function ShareActions({ onDownload, onShareX, onReset, isDownloading }) {
   return (
-    <div className="flex items-center justify-center gap-3 w-full max-w-lg pt-2 font-mono">
+    <div className="flex flex-wrap items-center justify-center gap-4 mt-6">
       <button
         onClick={onDownload}
-        className="flex-1 bg-[#0A251C] text-[#FFD93D] hover:bg-[#12382b] border-2 border-[#0A251C] font-black py-3 px-6 rounded-full shadow-[4px_4px_0px_0px_#0A251C] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_#0A251C] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none uppercase text-xs tracking-wider flex items-center justify-center gap-2"
+        disabled={isDownloading}
+        className="bg-[#0C372B] hover:bg-[#082920] text-[#FFD93D] font-black px-6 py-3 rounded-full flex items-center gap-2 border-2 border-[#185241] shadow-lg transition-all active:scale-95 disabled:opacity-50"
       >
-        <span>↓</span> DOWNLOAD HQ PNG
+        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+          <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+        </svg>
+        <span>{isDownloading ? 'GENERATING...' : 'DOWNLOAD PASS'}</span>
       </button>
 
-      <button
-        type="button"
-        onClick={() => navigator.clipboard.writeText(window.location.href)}
-        className="bg-[#FFFBEB] text-[#0A251C] hover:bg-[#FFD93D] border-2 border-[#0A251C] font-black py-3 px-5 rounded-full shadow-[4px_4px_0px_0px_#0A251C] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_#0A251C] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none uppercase text-xs tracking-wider shrink-0"
-      >
-        COPY LINK
-      </button>
+      {onShareX && (
+        <button
+          onClick={onShareX}
+          className="bg-[#0C372B] hover:bg-[#082920] text-white font-bold px-6 py-3 rounded-full border-2 border-[#185241] shadow-lg transition-all active:scale-95"
+        >
+          SHARE TO X
+        </button>
+      )}
+
+      {onReset && (
+        <button
+          onClick={onReset}
+          className="text-[#0C372B]/60 hover:text-[#0C372B] font-bold text-xs uppercase tracking-wider px-4 py-2"
+        >
+          RESET
+        </button>
+      )}
     </div>
   );
 }
