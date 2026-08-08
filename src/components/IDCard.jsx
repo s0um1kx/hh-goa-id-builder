@@ -190,9 +190,9 @@ const IDCard = forwardRef(({ formData }, ref) => {
             <button className="w-full mt-3 bg-[#FF3366] text-white text-[11px] font-black py-2 rounded-full uppercase tracking-widest shadow-md text-center">
               BUILDER VERIFIED
             </button>
-            <span className="text-[9px] text-[#628A7D] tracking-widest font-mono mt-1">
-              HH026-30423 • #frameingoa
-            </span>
+           <span className="text-[9px] text-[#628A7D] tracking-widest font-mono mt-1">
+            {formData?.builderId || 'HH026-30423'} • #frameingoa
+          </span>
           </div>
         </div>
       </div>
