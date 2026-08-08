@@ -169,13 +169,10 @@ export default function App() {
   const handleShareX = () => {
     if (!validateForm()) return;
 
-    const tweetText = `🌴 Built my Hacker Goa House Builder Card!\n\n👤 ${formData.fullName}\n🎴 Builder ID: #${formData.builderId}\n\nExcited to build, ship, and connect with amazing builders in Goa. 🚀\n\nCreate your own Builder Card:`;
     const appUrl = window.location.href;
-    const hashtags = 'FrameInGoa,HHGoa2026';
+    const tweetText = `🌴 Built my Hacker Goa House Builder Card!\n\n👤 ${formData.fullName}\n🎴 Builder ID: #${formData.builderId}\n\nExcited to build, ship, and connect with amazing builders in Goa. 🚀\n\nCreate your own Builder Card: ${appUrl}\n\n#FrameInGoa #HHGoa2026`;
 
-    const twitterUrl = `https://x.com/intent/post?text=${encodeURIComponent(
-      tweetText
-    )}&url=${encodeURIComponent(appUrl)}&hashtags=${hashtags}`;
+    const twitterUrl = `https://x.com/intent/post?text=${encodeURIComponent(tweetText)}`;
 
     window.open(twitterUrl, '_blank', 'noopener,noreferrer');
   };
