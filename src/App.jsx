@@ -166,17 +166,49 @@ export default function App() {
     }
   };
 
-  const handleShareX = () => {
-  if (!validateForm()) return;
+  const handleShareX = async () => {
+    if (!validateForm()) return;
 
-  // Ensure full https:// protocol is included
-  const appUrl = 'https://hh-goa-id-builder.vercel.app/';
-  const tweetText = `🛵 Built my Hacker Goa House Builder ID Card!\n\n👤 ${formData.fullName}\n🪪 Builder ID: #${formData.builderId}\n\nExcited to build, ship, and connect with amazing builders in Goa. 🌊\n\nCreate your own Builder Card: ${appUrl}\n\n#FrameInGoa #HHGoa2026`;
+    // 1. Automatically download the card PNG image
+    if (cardRef.current) {
+      try {
+        const cardElement = cardRef.current;
+        const originalTransform = cardElement.style.transform;
+        cardElement.style.transform = 'none';
 
-  const twitterUrl = `https://x.com/intent/post?text=${encodeURIComponent(tweetText)}`;
+        await new Promise((resolve) => setTimeout(resolve, 150));
 
-  window.open(twitterUrl, '_blank', 'noopener,noreferrer');
-};
+        const dataUrl = await toPng(cardElement, {
+          quality: 1.0,
+          pixelRatio: 2,
+          skipFonts: true,
+          cacheBust: false,
+        });
+
+        cardElement.style.transform = originalTransform;
+
+        const link = document.createElement('a');
+        const safeName = (formData.fullName || 'builder')
+          .toLowerCase()
+          .replace(/\s+/g, '-');
+        link.download = `${safeName}-id-${formData.builderId}.png`;
+        link.href = dataUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (err) {
+        console.error('Download prior to share failed:', err);
+      }
+    }
+
+    // 2. Open X Composer window with prompt instructions
+    const appUrl = 'https://hh-goa-id-builder.vercel.app/';
+    const tweetText = `🛵 Built my Hacker Goa House Builder ID Card!\n\n👤 ${formData.fullName}\n🪪 Builder ID: #${formData.builderId}\n\nExcited to build, ship, and connect with amazing builders in Goa. 🌊\n\n(Attach your downloaded ID card image below! 🖼️)\n\nCreate yours: ${appUrl}\n\n#FrameInGoa #HHGoa2026`;
+
+    const twitterUrl = `https://x.com/intent/post?text=${encodeURIComponent(tweetText)}`;
+
+    window.open(twitterUrl, '_blank', 'noopener,noreferrer');
+  };
 
   const handleReset = () => {
     setFormData(initialFormData);
