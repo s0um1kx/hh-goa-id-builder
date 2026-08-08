@@ -167,15 +167,16 @@ export default function App() {
   };
 
   const handleShareX = () => {
-    if (!validateForm()) return;
+  if (!validateForm()) return;
 
-    const appUrl = window.location.href;
-    const tweetText = `🌴 Built my Hacker Goa House Builder Card!\n\n👤 ${formData.fullName}\n🎴 Builder ID: #${formData.builderId}\n\nExcited to build, ship, and connect with amazing builders in Goa. 🚀\n\nCreate your own Builder Card: ${appUrl}\n\n#FrameInGoa #HHGoa2026`;
+  // Ensure full https:// protocol is included
+  const appUrl = 'https://hh-goa-id-builder.vercel.app/';
+  const tweetText = `🌴 Built my Hacker Goa House Builder Card!\n\n👤 ${formData.fullName}\n🎴 Builder ID: #${formData.builderId}\n\nExcited to build, ship, and connect with amazing builders in Goa. 🚀\n\nCreate your own Builder Card: ${appUrl}\n\n#FrameInGoa #HHGoa2026`;
 
-    const twitterUrl = `https://x.com/intent/post?text=${encodeURIComponent(tweetText)}`;
+  const twitterUrl = `https://x.com/intent/post?text=${encodeURIComponent(tweetText)}`;
 
-    window.open(twitterUrl, '_blank', 'noopener,noreferrer');
-  };
+  window.open(twitterUrl, '_blank', 'noopener,noreferrer');
+};
 
   const handleReset = () => {
     setFormData(initialFormData);
