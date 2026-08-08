@@ -61,7 +61,6 @@ export default function App() {
       if (formData.photoUrl && formData.photoUrl.startsWith('blob:')) {
         URL.revokeObjectURL(formData.photoUrl);
       }
-      // Convert file directly to Base64 so html-to-image never hits CORS errors
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData((prev) => ({
@@ -83,7 +82,6 @@ export default function App() {
     try {
       const cardElement = cardRef.current;
 
-      // Temporarily remove tilt transform
       const originalTransform = cardElement.style.transform;
       cardElement.style.transform = 'none';
 
@@ -92,7 +90,7 @@ export default function App() {
       const dataUrl = await toPng(cardElement, {
         quality: 1.0,
         pixelRatio: 2,
-        skipFonts: true, // Prevents external stylesheet/font CORS crashes
+        skipFonts: true,
         cacheBust: false,
       });
 
@@ -146,8 +144,31 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FAF7EE] text-[#0C372B] flex flex-col font-mono selection:bg-[#FFD93D]">
-      <header className="bg-[#0C372B] text-white px-8 py-5 border-b border-[#185241] flex justify-between items-center">
+    <div className="min-h-screen text-[#0C372B] flex flex-col font-mono selection:bg-[#FFD93D] relative bg-[#FAF8F5]">
+      {/* Background SVG Pattern Layer */}
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none z-0"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <pattern
+            id="sage-cross-pattern"
+            width="20"
+            height="20"
+            patternUnits="userSpaceOnUse"
+          >
+            <path
+              d="M8 10H12M10 8V12"
+              stroke="#DCE4D6"
+              strokeWidth="2"
+              strokeLinecap="square"
+            />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#sage-cross-pattern)" />
+      </svg>
+
+      <header className="bg-[#0C372B] text-white px-8 py-5 border-b border-[#185241] flex justify-between items-center relative z-10 shadow-sm">
         <div className="flex items-center gap-6">
           <img
             src={logoImg}
@@ -174,7 +195,7 @@ export default function App() {
         </div>
       </header>
 
-      <div className="bg-[#FFD93D] border-b-2 border-[#0C372B] py-2 overflow-hidden flex whitespace-nowrap text-[12px] font-black tracking-widest uppercase text-[#0C372B]">
+      <div className="bg-[#FFD93D] border-b-2 border-[#0C372B] py-2 overflow-hidden flex whitespace-nowrap text-[12px] font-black tracking-widest uppercase text-[#0C372B] relative z-10">
         <style>{`
           @keyframes marquee {
             0% { transform: translateX(0%); }
@@ -195,7 +216,7 @@ export default function App() {
         </div>
       </div>
 
-      <main className="max-w-345 mx-auto w-full p-6 md:p-10 flex-1 grid grid-cols-1 lg:grid-cols-[460px_1fr] gap-10 items-start">
+      <main className="max-w-345 mx-auto w-full p-6 md:p-10 flex-1 grid grid-cols-1 lg:grid-cols-[460px_1fr] gap-10 items-start relative z-10">
         <Controls
           formData={formData}
           setFormData={setFormData}
@@ -206,7 +227,7 @@ export default function App() {
 
         <div className="flex flex-col items-center space-y-6 sticky top-6 w-full">
           <div className="w-full flex justify-start items-center px-2 max-w-175">
-            <div className="bg-[#0C372B] text-[#FFD93D] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-2">
+            <div className="bg-[#0C372B] text-[#FFD93D] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-2 shadow-sm">
               <span className="w-2 h-2 rounded-full bg-[#FFD93D] animate-pulse" />
               LIVE PREVIEW • ID: {formData.builderId} • GOA 2026
             </div>
