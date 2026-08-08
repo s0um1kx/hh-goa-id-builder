@@ -26,7 +26,6 @@ export default function App() {
 
   const [formData, setFormData] = useState(initialFormData);
 
-  // Re-generate ID dynamically when user changes name
   useEffect(() => {
     if (formData.fullName) {
       setFormData((prev) => ({
@@ -36,7 +35,6 @@ export default function App() {
     }
   }, [formData.fullName]);
 
-  // Strict Validation Function to prevent download/share without required user input
   const validateForm = () => {
     const newErrors = {};
 
@@ -63,39 +61,55 @@ export default function App() {
       if (formData.photoUrl && formData.photoUrl.startsWith('blob:')) {
         URL.revokeObjectURL(formData.photoUrl);
       }
-      setFormData((prev) => ({
-        ...prev,
-        photoUrl: URL.createObjectURL(file),
-      }));
-      setErrors((prev) => ({ ...prev, photoUrl: null }));
+      // Convert file directly to Base64 so html-to-image never hits CORS errors
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({
+          ...prev,
+          photoUrl: reader.result,
+        }));
+        setErrors((prev) => ({ ...prev, photoUrl: null }));
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const handleDownload = async () => {
     if (!validateForm()) return;
     if (!cardRef.current) return;
+
     setIsDownloading(true);
 
     try {
-      const originalTransform = cardRef.current.style.transform;
-      cardRef.current.style.transform = 'none';
+      const cardElement = cardRef.current;
 
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      // Temporarily remove tilt transform
+      const originalTransform = cardElement.style.transform;
+      cardElement.style.transform = 'none';
 
-      const dataUrl = await toPng(cardRef.current, {
+      await new Promise((resolve) => setTimeout(resolve, 150));
+
+      const dataUrl = await toPng(cardElement, {
         quality: 1.0,
         pixelRatio: 2,
-        cacheBust: true,
+        skipFonts: true, // Prevents external stylesheet/font CORS crashes
+        cacheBust: false,
       });
 
-      cardRef.current.style.transform = originalTransform;
+      cardElement.style.transform = originalTransform;
 
       const link = document.createElement('a');
-      link.download = `${formData.fullName.toLowerCase().replace(/\s+/g, '-')}-pass-${formData.builderId}.png`;
+      const safeName = (formData.fullName || 'builder')
+        .toLowerCase()
+        .replace(/\s+/g, '-');
+      link.download = `${safeName}-id-${formData.builderId}.png`;
       link.href = dataUrl;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     } catch (err) {
-      console.error('Failed to export ID Card image:', err);
+      console.error('Export failed:', err);
+      alert('Failed to generate image. Please try re-uploading your photo.');
     } finally {
       setIsDownloading(false);
     }
@@ -105,7 +119,6 @@ export default function App() {
     if (!validateForm()) return;
 
     const tweetText = `🌴 Built my Hacker Goa House Builder Card!\n\n👤 ${formData.fullName}\n🎴 Builder ID: #${formData.builderId}\n\nExcited to build, ship, and connect with amazing builders in Goa. 🚀\n\nCreate your own Builder Card:`;
-    
     const appUrl = window.location.href;
     const hashtags = 'FrameInGoa,HHGoa2026';
 
@@ -117,9 +130,6 @@ export default function App() {
   };
 
   const handleReset = () => {
-    if (formData.photoUrl && formData.photoUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(formData.photoUrl);
-    }
     setFormData(initialFormData);
     setErrors({});
   };
@@ -202,7 +212,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="w-full flex justify-center overflow-x-auto py-2">
+          <div className="w-full flex justify-center overflow-hidden py-2">
             <IDCard ref={cardRef} formData={formData} />
           </div>
 
