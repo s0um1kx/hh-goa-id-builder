@@ -61,27 +61,28 @@ const IDCard = forwardRef(({ formData }, ref) => {
       />
 
       {/* Main Content Body */}
-      <div className="pl-7 h-full flex flex-col justify-between relative z-10">
+      <div className="pl-7 h-full flex flex-col justify-between relative z-10 min-w-0">
         {/* Top Header & Top-Right Pill */}
-        <div className="flex justify-between items-center pt-1">
+        <div className="flex justify-between items-center pt-1 min-w-0">
           <h1 className="text-[32px] font-black text-[#FFD93D] leading-none tracking-wider font-sans uppercase">
             BUILDER ID CARD
           </h1>
-          <div className="bg-[#082920] border border-[#185241] text-[#FFD93D] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1.5">
+          <div className="bg-[#082920] border border-[#185241] text-[#FFD93D] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1.5 shrink-0">
             <span className="w-1.5 h-1.5 rounded-full bg-[#FFD93D]" />
             GOA • INDIA • 28-31 OCT 2026
           </div>
         </div>
 
         {/* Center Grid: Left Details vs Right Photo Card */}
-        <div className="grid grid-cols-[1fr_210px] gap-6 items-start mt-2">
+        <div className="grid grid-cols-[1fr_210px] gap-6 items-start mt-2 min-w-0">
           {/* Left Column Details */}
-          <div className="flex flex-col">
+          <div className="flex flex-col min-w-0">
             <span className="text-[11px] text-[#A2C4B9] tracking-wider font-sans">
               hello my name is...
             </span>
 
-            <h2 className="text-[38px] font-serif font-black text-white tracking-tight leading-tight mt-0.5">
+            {/* UPDATED CLASSNAME */}
+            <h2 className="text-[28px] sm:text-[34px] font-serif font-black text-white tracking-tight leading-snug mt-0.5 wrap-break-word break-all line-clamp-2 min-w-0">
               {formData?.fullName || 'Soumik Mondal'}
             </h2>
 
@@ -92,8 +93,8 @@ const IDCard = forwardRef(({ formData }, ref) => {
             </div>
 
             {/* Key-Value Details Grid */}
-            <div className="mt-8 space-y-2.5 text-[11px]">
-              <div className="grid grid-cols-[80px_1fr] items-center">
+            <div className="mt-6 space-y-2 text-[11px] min-w-0">
+              <div className="grid grid-cols-[80px_1fr] items-center min-w-0">
                 <span className="text-[#628A7D] font-bold uppercase tracking-wider">
                   ROLE
                 </span>
@@ -102,7 +103,7 @@ const IDCard = forwardRef(({ formData }, ref) => {
                 </span>
               </div>
 
-              <div className="grid grid-cols-[80px_1fr] items-center">
+              <div className="grid grid-cols-[80px_1fr] items-center min-w-0">
                 <span className="text-[#628A7D] font-bold uppercase tracking-wider">
                   STACK
                 </span>
@@ -113,7 +114,7 @@ const IDCard = forwardRef(({ formData }, ref) => {
                 </span>
               </div>
 
-              <div className="grid grid-cols-[80px_1fr] items-center">
+              <div className="grid grid-cols-[80px_1fr] items-center min-w-0">
                 <span className="text-[#628A7D] font-bold uppercase tracking-wider">
                   GOA ID
                 </span>
@@ -122,7 +123,7 @@ const IDCard = forwardRef(({ formData }, ref) => {
                 </span>
               </div>
 
-              <div className="grid grid-cols-[80px_1fr] items-center">
+              <div className="grid grid-cols-[80px_1fr] items-center min-w-0">
                 <span className="text-[#628A7D] font-bold uppercase tracking-wider">
                   GITHUB
                 </span>
@@ -190,9 +191,9 @@ const IDCard = forwardRef(({ formData }, ref) => {
             <button className="w-full mt-3 bg-[#FF3366] text-white text-[11px] font-black py-2 rounded-full uppercase tracking-widest shadow-md text-center">
               BUILDER VERIFIED
             </button>
-           <span className="text-[9px] text-[#628A7D] tracking-widest font-mono mt-1">
-            {formData?.builderId || 'HH026-30423'} • #frameingoa
-          </span>
+            <span className="text-[9px] text-[#628A7D] tracking-widest font-mono mt-1">
+              {formData?.builderId || 'HH026-30423'} • #frameingoa
+            </span>
           </div>
         </div>
       </div>
