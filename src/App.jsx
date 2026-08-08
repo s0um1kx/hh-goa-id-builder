@@ -10,17 +10,18 @@ import { generateBuilderId } from './utils/generateId';
 export default function App() {
   const cardRef = useRef(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const initialFormData = {
-    fullName: 'Soumik Mondal',
-    role: 'Full-Stack Builder',
-    location: 'Goa, India',
-    selectedTech: ['Full-Stack', 'Rust', 'AI', 'Design'],
-    github: 's0um1kx',
-    linkedin: 'soumik.workmail@gmail.com',
+    fullName: '',
+    role: '',
+    location: '',
+    selectedTech: [],
+    github: '',
+    linkedin: '',
     builderTitle: 'CODE WIZARD',
     photoUrl: null,
-    builderId: generateBuilderId('Soumik Mondal'),
+    builderId: generateBuilderId(''),
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -35,6 +36,27 @@ export default function App() {
     }
   }, [formData.fullName]);
 
+  // Strict Validation Function to prevent download/share without required user input
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.fullName || !formData.fullName.trim()) {
+      newErrors.fullName = 'Please enter your full name';
+    }
+    if (!formData.role || !formData.role.trim()) {
+      newErrors.role = 'Please enter your role';
+    }
+    if (!formData.selectedTech || formData.selectedTech.length === 0) {
+      newErrors.selectedTech = 'Please select at least 1 tech stack';
+    }
+    if (!formData.photoUrl) {
+      newErrors.photoUrl = 'Please upload a photo';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -45,10 +67,12 @@ export default function App() {
         ...prev,
         photoUrl: URL.createObjectURL(file),
       }));
+      setErrors((prev) => ({ ...prev, photoUrl: null }));
     }
   };
 
   const handleDownload = async () => {
+    if (!validateForm()) return;
     if (!cardRef.current) return;
     setIsDownloading(true);
 
@@ -78,6 +102,8 @@ export default function App() {
   };
 
   const handleShareX = () => {
+    if (!validateForm()) return;
+
     const tweetText = `🌴 Built my Hacker Goa House Builder Card!\n\n👤 ${formData.fullName}\n🎴 Builder ID: #${formData.builderId}\n\nExcited to build, ship, and connect with amazing builders in Goa. 🚀\n\nCreate your own Builder Card:`;
     
     const appUrl = window.location.href;
@@ -95,6 +121,7 @@ export default function App() {
       URL.revokeObjectURL(formData.photoUrl);
     }
     setFormData(initialFormData);
+    setErrors({});
   };
 
   const tickerItems = [
@@ -163,6 +190,8 @@ export default function App() {
           formData={formData}
           setFormData={setFormData}
           onImageUpload={handleImageUpload}
+          errors={errors}
+          setErrors={setErrors}
         />
 
         <div className="flex flex-col items-center space-y-6 sticky top-6 w-full">
