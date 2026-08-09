@@ -40,39 +40,23 @@
 
 ---
 
+## 🌐 Live Deployment
+
+- **Live Web App:** [https://hh-goa-id-builder.vercel.app/](https://hh-goa-id-builder.vercel.app/)
+- **Dynamic OG Image API:** `https://hh-goa-id-builder.vercel.app/api/og`
+- **Hosting Platform:** Vercel Global Edge Network
+
+---
+
 ## 🚀 Local Development Setup
 
 ```bash
-# 1. Clone repo
+# 1. Clone repository
 git clone [https://github.com/s0um1kx/hh-goa-id-builder.git](https://github.com/s0um1kx/hh-goa-id-builder.git)
 cd hh-goa-id-builder
 
 # 2. Install dependencies
 npm install
 
-# 3. Launch local dev server
+# 3. Launch dev server
 npm run dev
-
-## 📂 Project Structure
-
-hh-goa-id-builder/
-├── api/
-│   └── og.jsx             # Edge runtime for dynamic X card previews
-├── public/
-│   ├── favicon.svg        # Site favicon
-│   └── screenshots/       # Documentation image assets
-├── src/
-│   ├── assets/            # SVG patterns and branding assets
-│   ├── components/
-│   │   ├── Controls.jsx   # Input fields & photo transformation sliders
-│   │   ├── Footer.jsx     # Event & studio footer
-│   │   ├── IDCard.jsx     # Interactive ID card canvas component
-│   │   └── ShareActions.jsx # Native web share & export handlers
-│   ├── utils/
-│   │   └── generateId.js  # Dynamic Builder ID generation logic
-│   ├── App.jsx            # Core application state & image processing loop
-│   ├── main.jsx           # React DOM entry point
-│   └── index.css          # Tailwind directives & marquee animations
-├── index.html             # Open Graph metadata definitions
-├── tailwind.config.js     # HH Goa 2026 design tokens
-└── vite.config.js         # Vite build settings
