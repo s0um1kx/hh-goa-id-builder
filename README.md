@@ -60,3 +60,29 @@ npm install
 
 # 3. Launch dev server
 npm run dev
+
+## 📂 Project Structure
+
+```text
+hh-goa-id-builder/
+├── api/
+│   └── og.jsx             # Edge runtime for dynamic X card previews
+├── public/
+│   ├── favicon.svg        # Site favicon
+│   └── screenshots/       # Documentation image assets
+├── src/
+│   ├── assets/            # SVG patterns and branding assets
+│   ├── components/
+│   │   ├── Controls.jsx   # Input fields & photo transformation sliders
+│   │   ├── Footer.jsx     # Event & studio footer
+│   │   ├── IDCard.jsx     # Interactive ID card canvas component
+│   │   └── ShareActions.jsx # Native web share & export handlers
+│   ├── utils/
+│   │   └── generateId.js  # Dynamic Builder ID generation logic
+│   ├── App.jsx            # Core application state & image processing loop
+│   ├── main.jsx           # React DOM entry point
+│   └── index.css          # Tailwind directives & marquee animations
+├── index.html             # Open Graph metadata definitions
+├── tailwind.config.js     # HH Goa 2026 design tokens
+└── vite.config.js         # Vite build settings
+```
