@@ -4,6 +4,7 @@ import heic2any from 'heic2any';
 import Controls from './components/Controls';
 import IDCard from './components/IDCard';
 import ShareActions from './components/ShareActions';
+import Footer from './components/Footer';
 import logoImg from './assets/logo-background-remove.png';
 import studioImg from './assets/studio-bg remove.png';
 import { generateBuilderId } from './utils/generateId';
@@ -305,7 +306,6 @@ export default function App() {
 
         <div className="flex flex-col items-center space-y-6 w-full relative">
           <div className="w-full flex justify-center relative">
-            {/* FLOATING LIVE PREVIEW BADGE FLOATING CLEARLY ABOVE THE CARD */}
             <div className="absolute -top-11 left-1/2 -translate-x-1/2 z-40">
               <div className="bg-[#0C372B] text-[#FFD93D] text-[10px] font-bold px-3.5 py-1.5 rounded-full uppercase tracking-widest flex items-center gap-2 shadow-lg border border-[#185241]">
                 <span className="w-2 h-2 rounded-full bg-[#FFD93D] animate-pulse" />
@@ -330,6 +330,8 @@ export default function App() {
           />
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }
