@@ -85,21 +85,24 @@ const IDCard = forwardRef(({ formData }, ref) => {
 
       {/* 4. DYNAMIC TEXT OVERLAYS */}
       <div className="absolute inset-0 z-20 pointer-events-none">
-        {/* FULL NAME */}
+        {/* FULL NAME - Using canonical Tailwind class 'wrap-anywhere' */}
         <div
-          className="absolute font-serif text-[#FAF8F5] font-semibold tracking-tight truncate whitespace-nowrap flex items-center"
+          className="absolute font-serif text-[#FAF8F5] font-semibold tracking-tight whitespace-normal break-all wrap-anywhere leading-tight flex items-center overflow-hidden"
           style={{
-            top: '30%',
+            top: '29.5%',
             left: '6.5%',
             width: '46%',
-            height: '13%',
-            fontSize: 'clamp(0.9rem, 1.6vw, 1.6rem)',
+            height: '18%',
+            fontSize:
+              fullName && fullName.length > 20
+                ? 'clamp(0.65rem, 1.1vw, 1.1rem)'
+                : 'clamp(0.85rem, 1.4vw, 1.4rem)',
           }}
         >
           {fullName || ''}
         </div>
 
-        {/* ROLE - Aligned baseline with icon & label */}
+        {/* ROLE */}
         <div
           className="absolute text-[#FAF8F5] font-bold truncate text-xs sm:text-sm md:text-base tracking-wide flex items-center uppercase leading-none"
           style={{
