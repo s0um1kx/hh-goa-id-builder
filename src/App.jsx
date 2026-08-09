@@ -197,7 +197,8 @@ export default function App() {
     const appUrl = 'https://hh-goa-id-builder.vercel.app/';
     const tweetText = `🛵 Built my Hacker Goa House Builder ID Card!\n\n👤 ${formData.fullName}\n🪪 Builder ID: #${formData.builderId}\n\nExcited to build, ship, and connect with amazing builders in Goa. 🌊\n\n(Attach your downloaded ID card image below! 🖼️)\n\nCreate yours: ${appUrl}\n\n#FrameInGoa #HHGoa2026 @247pmstudio`;
 
-    const twitterUrl = `https://x.com/intent/post?text=${encodeURIComponent(tweetText)}`;
+    // Added card_id=hidden parameter to disable the OG preview card in Twitter's composer
+    const twitterUrl = `https://x.com/intent/post?text=${encodeURIComponent(tweetText)}&card_id=hidden`;
 
     window.open(twitterUrl, '_blank', 'noopener,noreferrer');
   };
