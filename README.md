@@ -1,6 +1,6 @@
 # 🛵 Hacker House Goa 2026 — Builder ID Card & Frame Generator
 
-> High-performance, client-side web utility for generating personalized, event-branded **Builder ID Cards** and **Avatar Frames** for Hacker House Goa 2026. Built using React, Tailwind CSS, HTML5 Canvas, and Vercel Edge Functions.
+> High-performance, client-side web application for generating personalized, event-branded **Builder ID Cards** and **Avatar Frames** for Hacker House Goa 2026. Built using React, Tailwind CSS, HTML5 Canvas API, and Vercel Edge Functions.
 
 ---
 
@@ -32,11 +32,11 @@
 
 | Builder Controls | Live Card Preview |
 | :---: | :---: |
-| ![Controls](https://raw.githubusercontent.com/s0um1kx/hh-goa-id-builder/main/public/screenshots/controls.png) | ![ID Card Preview](https://raw.githubusercontent.com/s0um1kx/hh-goa-id-builder/main/public/screenshots/card-preview.png) |
+| ![Controls](./public/screenshots/controls.png) | ![ID Card Preview](./public/screenshots/card-preview.png) |
 
 | X / Twitter Open Graph Card | High-Res PNG Export |
 | :---: | :---: |
-| ![Twitter Card Preview](https://raw.githubusercontent.com/s0um1kx/hh-goa-id-builder/main/public/screenshots/twitter-card.png) | ![Exported PNG](https://raw.githubusercontent.com/s0um1kx/hh-goa-id-builder/main/public/screenshots/export.png) |
+| ![Twitter Card Preview](./public/screenshots/twitter-card.png) | ![Exported PNG](./public/screenshots/export.png) |
 
 ---
 
@@ -52,7 +52,7 @@
 
 ```bash
 # 1. Clone repository
-git clone [https://github.com/s0um1kx/hh-goa-id-builder.git](https://github.com/s0um1kx/hh-goa-id-builder.git)
+git clone https://github.com/s0um1kx/hh-goa-id-builder.git
 cd hh-goa-id-builder
 
 # 2. Install dependencies
@@ -60,6 +60,9 @@ npm install
 
 # 3. Launch dev server
 npm run dev
+```
+
+---
 
 ## 📂 Project Structure
 
