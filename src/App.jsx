@@ -17,10 +17,8 @@ export default function App() {
     fullName: '',
     role: '',
     location: '',
-    selectedTech: [],
     github: '',
     linkedin: '',
-    builderTitle: 'CODE WIZARD',
     photoUrl: null,
     builderId: generateBuilderId(''),
   };
@@ -44,9 +42,6 @@ export default function App() {
     }
     if (!formData.role || !formData.role.trim()) {
       newErrors.role = 'Please enter your role';
-    }
-    if (!formData.selectedTech || formData.selectedTech.length === 0) {
-      newErrors.selectedTech = 'Please select at least 1 tech stack';
     }
     if (!formData.photoUrl) {
       newErrors.photoUrl = 'Please upload a photo';
@@ -97,7 +92,6 @@ export default function App() {
     try {
       let fileToProcess = file;
 
-      // Check if file is HEIC / HEIF format
       const isHeic =
         file.name?.toLowerCase().endsWith('.heic') ||
         file.name?.toLowerCase().endsWith('.heif') ||
@@ -134,7 +128,6 @@ export default function App() {
 
     try {
       const cardElement = cardRef.current;
-
       const originalTransform = cardElement.style.transform;
       cardElement.style.transform = 'none';
 
@@ -169,7 +162,6 @@ export default function App() {
   const handleShareX = async () => {
     if (!validateForm()) return;
 
-    // 1. Automatically download the card PNG image
     if (cardRef.current) {
       try {
         const cardElement = cardRef.current;
@@ -201,7 +193,6 @@ export default function App() {
       }
     }
 
-    // 2. Open X Composer window with prompt instructions
     const appUrl = 'https://hh-goa-id-builder.vercel.app/';
     const tweetText = `🛵 Built my Hacker Goa House Builder ID Card!\n\n👤 ${formData.fullName}\n🪪 Builder ID: #${formData.builderId}\n\nExcited to build, ship, and connect with amazing builders in Goa. 🌊\n\n(Attach your downloaded ID card image below! 🖼️)\n\nCreate yours: ${appUrl}\n\n#FrameInGoa #HHGoa2026`;
 
@@ -228,7 +219,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen text-[#0C372B] flex flex-col font-mono selection:bg-[#FFD93D] relative bg-[#FAF8F5]">
-      {/* Sage Cross Background Pattern */}
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none z-0"
         xmlns="http://www.w3.org/2000/svg"
@@ -304,7 +294,7 @@ export default function App() {
         </div>
       </div>
 
-      <main className="max-w-345 mx-auto w-full p-6 md:p-10 flex-1 grid grid-cols-1 lg:grid-cols-[460px_1fr] gap-10 items-start relative z-10">
+      <main className="max-w-345 mx-auto w-full p-6 md:p-10 md:pt-14 flex-1 grid grid-cols-1 lg:grid-cols-[460px_1fr] gap-10 items-start relative z-10">
         <Controls
           formData={formData}
           setFormData={setFormData}
@@ -313,16 +303,23 @@ export default function App() {
           setErrors={setErrors}
         />
 
-        <div className="flex flex-col items-center space-y-6 sticky top-6 w-full">
-          <div className="w-full flex justify-start items-center px-2 max-w-175">
-            <div className="bg-[#0C372B] text-[#FFD93D] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest flex items-center gap-2 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-[#FFD93D] animate-pulse" />
-              LIVE PREVIEW • ID: {formData.builderId} • GOA 2026
+        <div className="flex flex-col items-center space-y-6 w-full relative">
+          <div className="w-full flex justify-center relative">
+            {/* FLOATING LIVE PREVIEW BADGE FLOATING CLEARLY ABOVE THE CARD */}
+            <div className="absolute -top-11 left-1/2 -translate-x-1/2 z-40">
+              <div className="bg-[#0C372B] text-[#FFD93D] text-[10px] font-bold px-3.5 py-1.5 rounded-full uppercase tracking-widest flex items-center gap-2 shadow-lg border border-[#185241]">
+                <span className="w-2 h-2 rounded-full bg-[#FFD93D] animate-pulse" />
+                LIVE PREVIEW • ID: {formData.builderId} • GOA 2026
+              </div>
             </div>
-          </div>
 
-          <div className="w-full flex justify-center overflow-hidden py-2">
-            <IDCard ref={cardRef} formData={formData} />
+            <IDCard
+              ref={cardRef}
+              formData={{
+                ...formData,
+                cardId: formData.builderId,
+              }}
+            />
           </div>
 
           <ShareActions

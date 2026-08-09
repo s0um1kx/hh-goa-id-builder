@@ -50,7 +50,6 @@ export default function Controls({
           </span>
         </div>
 
-        {/* Hidden File Input accepting HEIC/HEIF files */}
         <input
           type="file"
           ref={fileInputRef}
@@ -64,7 +63,7 @@ export default function Controls({
             <div className="flex items-center gap-4">
               <img
                 src={formData.photoUrl}
-                alt="Builder B&W Preview"
+                alt="Builder Preview"
                 className="w-16 h-20 object-cover rounded-xl border border-[#FFD93D]/40 grayscale contrast-125"
               />
               <div>
@@ -111,7 +110,7 @@ export default function Controls({
                 Drop photo or click to upload
               </div>
               <div className="text-[10px] text-[#A2C4B9]/70 mt-0.5 tracking-tight">
-                JPG/PNG/HEIC • B&W auto • 180×220 crop
+                JPG/PNG/HEIC • B&W auto
               </div>
             </div>
           </label>
@@ -178,7 +177,7 @@ export default function Controls({
           )}
         </div>
 
-        {/* GITHUB & CONTACT */}
+        {/* SOCIALS: GITHUB & CONTACT/LINKEDIN (SPLIT ROW ON NEXT LINE OF ROLE) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
           <div className="space-y-1.5">
             <label className="block text-[10px] font-black text-[#A2C4B9] tracking-widest uppercase">
@@ -190,7 +189,7 @@ export default function Controls({
               value={formData.github || ''}
               onChange={handleTextChange}
               placeholder="s0um1kx"
-              className="w-full px-4 py-2.5 rounded-xl bg-[#082D22] text-white font-bold text-[13px] outline-none border border-[#185241] focus:border-[#FFD93D]"
+              className="w-full px-4 py-2.5 rounded-xl bg-[#082D22] text-white font-bold text-[13px] outline-none border border-[#185241] focus:border-[#FFD93D] truncate"
             />
           </div>
 
