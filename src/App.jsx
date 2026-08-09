@@ -13,6 +13,7 @@ export default function App() {
   const cardRef = useRef(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [statusMessage, setStatusMessage] = useState('');
 
   const initialFormData = {
     fullName: '',
@@ -22,6 +23,8 @@ export default function App() {
     linkedin: '',
     photoUrl: null,
     builderId: generateBuilderId(''),
+    zoom: 1,
+    offset: { x: 0, y: 0 },
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -80,6 +83,7 @@ export default function App() {
         const bwImageUrl = canvas.toDataURL('image/png');
         setFormData((prev) => ({ ...prev, photoUrl: bwImageUrl }));
         setErrors((prev) => ({ ...prev, photoUrl: null }));
+        setStatusMessage('');
       };
       img.src = event.target.result;
     };
@@ -100,6 +104,7 @@ export default function App() {
         file.type === 'image/heif';
 
       if (isHeic) {
+        setStatusMessage('Converting iPhone HEIC photo...');
         const convertedBlob = await heic2any({
           blob: file,
           toType: 'image/jpeg',
@@ -117,6 +122,7 @@ export default function App() {
       processAndSetImage(fileToProcess);
     } catch (err) {
       console.error('HEIC processing failed:', err);
+      setStatusMessage('');
       alert('Unable to process this image. Please try another photo.');
     }
   };
@@ -206,6 +212,7 @@ export default function App() {
   const handleReset = () => {
     setFormData(initialFormData);
     setErrors({});
+    setStatusMessage('');
   };
 
   const tickerItems = [
@@ -221,6 +228,12 @@ export default function App() {
 
   return (
     <div className="min-h-screen text-[#0C372B] flex flex-col font-mono selection:bg-[#FFD93D] relative bg-[#FAF8F5]">
+      {statusMessage && (
+        <div className="fixed top-4 right-4 bg-[#0C372B] text-[#FFD93D] px-4 py-2 rounded-md z-50 text-xs font-bold shadow-md">
+          {statusMessage}
+        </div>
+      )}
+
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none z-0"
         xmlns="http://www.w3.org/2000/svg"
